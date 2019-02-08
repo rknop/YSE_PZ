@@ -16,7 +16,7 @@ class chandraImages():
 		self.tmpfile="delme.xml"
 
 		## Selection criteria
-		self.allowed_detector=['ACIS-I','ACIS-S']
+		self.allowed_detector=['ACIS-I']
 
 		# Information pulled from Chandra archive
 		self.obstable=None
@@ -79,7 +79,7 @@ class chandraImages():
 
 
 ## TEST TEST TEST
-if __name__=='__main__':
+#if __name__=='__main__':
 	startTime = datetime.now()
 	if (len(sys.argv) < 2):
 		print("Usage: python chandra_query.py ra(deg) dec(deg)!!!")
