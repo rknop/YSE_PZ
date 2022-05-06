@@ -1,0 +1,41 @@
+# Image: registry.services.nersc.gov/raknop/yse_pz_rknop_desc
+# Spin external volumes expected
+#   /secrets
+#       postgresql_password
+#       postgresql_explorer_password
+#       django_secret_key
+#   /YSE_PZ
+
+FROM python:3.8
+MAINTAINER Rob Knop <raknop@lbl.gov>
+
+RUN pip install --upgrade pip
+
+WORKDIR /YSE_PZ
+ENV HOME /
+
+RUN DEBIAN_FRONTEND="noninteractive" \
+   apt-get update && \
+   apt-get -y upgrade && \
+   apt-get clean && \
+   rm -rf /var/lib/apt/lists/*
+
+RUN DEBIAN_FRONTEND="noninteractive" \
+   apt-get update && \
+   apt-get install -y gdal-bin librdkafka-dev && \
+   apt-get clean && \
+   rm -rf /var/lib/apt/lists/*
+
+COPY requirements_rknop_desc.txt ./requirements.txt
+RUN pip install \
+	--no-cache \
+	--disable-pip-version-check \
+	--requirement requirements.txt && \
+    rm -rf /.cache/pip
+
+EXPOSE 8080
+ENTRYPOINT [ "/usr/local/bin/gunicorn", "YSE_PZ.wsgi", "-b", "0.0.0.0:8080", "--access-logfile", "-", "--error-logfile", "-", "-k", "gevent", "--timeout", "300", "--workers", "2"]
+
+RUN mkdir -p /.astropy
+RUN chmod -R 777 /.astropy
+

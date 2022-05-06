@@ -1,0 +1,10 @@
+Docker images:
+  registry.services.nersc.gov/raknop/yse_pz_postgres : docker/Dockerfile.postgres
+  registry.services.nersc.gov/raknop/yse_pz_postgres : docker/Dockerfile.rknop_desc
+
+Mount secrets at /secrets, secrets to set:
+  * django_secret_key
+  * postgresql_password
+  * postgresql_explorer_password
+  
+

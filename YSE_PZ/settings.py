@@ -26,7 +26,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'f9zh73k2z&-p*k^fzj!sydk03zwlxdm%*13rd9t$*n0i6*sr6%'
+# SECRET_KEY ='f9zh73k2z&-p*k^fzj!sydk03zwlxdm%*13rd9t$*n0i6*sr6%'
+with open( "/secrets/django_secret_key" ) as ifp:
+    SECRET_KEY = ifp.readline().strip()
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(config.get('site_settings', 'IS_DEBUG'))
@@ -141,27 +143,51 @@ WSGI_APPLICATION = 'YSE_PZ.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 #import pymysql
-DATABASES = {
-    'explorer': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': config.get('database', 'DATABASE_NAME'),
-        'USER': config.get('database', 'EXPLORER_USER'),
-        'PASSWORD': config.get('database', 'EXPLORER_PASSWORD'),
-        'HOST': config.get('database', 'DATABASE_HOST'),
-        'PORT': config.get('database', 'DATABASE_PORT')
-    },
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': config.get('database', 'DATABASE_NAME'),
-        'USER': config.get('database', 'DATABASE_USER'),
-        'PASSWORD': config.get('database', 'DATABASE_PASSWORD'),
-        'HOST': config.get('database', 'DATABASE_HOST'),
-        'PORT': config.get('database', 'DATABASE_PORT'),
-		'OPTIONS': {'ssl': {'ssl_disabled': True}}
-    }
-}
+# DATABASES = {
+#     'explorer': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': config.get('database', 'DATABASE_NAME'),
+#         'USER': config.get('database', 'EXPLORER_USER'),
+#         'PASSWORD': config.get('database', 'EXPLORER_PASSWORD'),
+#         'HOST': config.get('database', 'DATABASE_HOST'),
+#         'PORT': config.get('database', 'DATABASE_PORT')
+#     },
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': config.get('database', 'DATABASE_NAME'),
+#         'USER': config.get('database', 'DATABASE_USER'),
+#         'PASSWORD': config.get('database', 'DATABASE_PASSWORD'),
+#         'HOST': config.get('database', 'DATABASE_HOST'),
+#         'PORT': config.get('database', 'DATABASE_PORT'),
+# 		'OPTIONS': {'ssl': {'ssl_disabled': True}}
+#     }
+# }
 #pymysql.version_info = (1, 4, 2, "final", 0)
 #pymysql.install_as_MySQLdb()
+
+with open( "/secrets/postgresql_password" ) as ifp:
+    POSTGRESQL_PASSWORD = ifp.readline().strip()
+with open( "/secrets/postgresql_explorer_password" ) as ifp:
+    POSTGRESQL_EXPLORER_PASSWORD = ifp.readline().strip()
+
+DATABASES = {
+    'default': {
+        'ENGINE': os.getenv( 'DB_ENGINE', 'django.db.backends.postgresql' ),
+        'NAME': os.getenv( 'DB_NAME', 'yse_pz' ),
+        'USER': os.getenv( 'DB_USER', 'postgres' ),
+        'PASSWORD': POSTGRESQL_PASSWORD,
+        'HOST': os.getenv( 'DB_HOST', 'yse-pz-rknop-postgres' ),
+        'PORT': os.getenv( 'DB_PORT', '5432' )
+    }
+    'explorer': {
+        'ENGINE': os.getenv( 'DB_ENGINE', 'django.db.backends.postgresql' ),
+        'NAME': os.getenv( 'DB_NAME', 'yse_pz' ),
+        'USER': os.getenv( 'EXPLORER_USER', 'explorer' ),
+        'PASSWORD': POSTGRESQL_EXPLORER_PASSWORD,
+        'HOST': os.getenv( 'DB_HOST', 'yse-pz-rknop-postgres' ),
+        'PORT': os.getenv( 'DB_PORT', '5432' )
+    }
+}
 
 EXPLORER_CONNECTIONS = { 'Explorer': 'explorer' }
 EXPLORER_DEFAULT_CONNECTION = 'explorer'
